@@ -1,5 +1,5 @@
 # Vaccines-Registration-App 
-(Microsoft Excel,Visual Basic Application)
+(Microsoft Excel, Visual Basic Application)
 
 ![v2](https://user-images.githubusercontent.com/48885389/107772485-402a9380-6d77-11eb-8806-0d68ee0f9d71.PNG)
 
