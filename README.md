@@ -9,4 +9,4 @@ Cononavirus is still spreading around the world, affected different people in di
 
 ![v3](https://user-images.githubusercontent.com/48885389/107772524-4d478280-6d77-11eb-8798-314bf59e7385.PNG)
 
-Automated form added with different features as well as database has modified functions with either built in edit button or delete button, transferring database from excel table to application listbox.
+Automated form added with different features as well as database has modified functions with built in edit button or delete button, which can transfer database from excel table to application listbox.
