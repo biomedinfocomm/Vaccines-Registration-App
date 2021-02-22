@@ -1,0 +1,226 @@
+---------------------------vaccination----------------------------------
+#Module1
+Option Explicit
+
+Sub Reset()
+
+    Dim iRow As Long
+    
+    iRow = [Counta(Database!A:A)] 'identify last row
+    
+    With frmForm
+    
+    .txtName.Value = ""
+    .txtNRIC.Value = ""
+    .optMale.Value = False
+    .optFemale.Value = False
+    .txtDOB.Value = ""
+    
+    .cmbArea.Clear
+    .cmbArea.AddItem "Central"
+    .cmbArea.AddItem "North"
+    .cmbArea.AddItem "South"
+    .cmbArea.AddItem "East"
+    .cmbArea.AddItem "West"
+    
+    .txtAdd.Value = ""
+    .txtTel.Value = ""
+    .txtEmail.Value = ""
+    
+    .cmbTypes.Clear
+    .cmbTypes.AddItem "Pfizer-BioNTech"
+    .cmbTypes.AddItem "Moderna’s"
+    
+    .txtMed.Value = ""
+    
+    
+    .txtRowNumber.Value = ""
+    
+    
+    .lstDatabase.ColumnCount = 13
+    .lstDatabase.ColumnHeads = True
+    
+    .lstDatabase.ColumnWidths = "50,100,100,100,100,100,100,100,100,100,100,100"
+    
+    If iRow > 1 Then
+        
+        .lstDatabase.RowSource = "Database!A2:M" & iRow
+    Else
+    
+        .lstDatabase.RowSource = "Database!A2:M2"
+    
+    End If
+    
+    End With
+
+
+End Sub
+    
+
+Sub Submit()
+    
+    Dim sh As Worksheet
+    Dim iRow As Long
+    
+    Set sh = ThisWorkbook.Sheets("Database")
+    
+    If frmForm.txtRowNumber.Value = "" Then
+    
+        iRow = [Counta(Database!A:A)] + 1
+    Else
+        iRow = frmForm.txtRowNumber.Value
+    End If
+    
+    With sh
+    
+    .Cells(iRow, 1) = iRow - 1
+    .Cells(iRow, 2) = frmForm.txtName.Value
+    .Cells(iRow, 3) = frmForm.txtNRIC.Value
+    .Cells(iRow, 4) = IIf(frmForm.optMale.Value = True, "Male", "Female")
+    .Cells(iRow, 5) = frmForm.txtDOB.Value
+    .Cells(iRow, 6) = frmForm.cmbArea.Value
+    .Cells(iRow, 7) = frmForm.txtAdd.Value
+    .Cells(iRow, 8) = frmForm.txtTel.Value
+    .Cells(iRow, 9) = frmForm.txtEmail.Value
+    .Cells(iRow, 10) = frmForm.cmbTypes.Value
+    .Cells(iRow, 11) = frmForm.txtMed.Value
+    .Cells(iRow, 12) = Application.UserName
+    .Cells(iRow, 13) = [Text(Now(), "DD-MM-YYYY HH:MM:SS")]
+    
+    End With
+    
+End Sub
+
+
+Sub Show_Form()
+
+    frmForm.Show
+
+End Sub
+
+
+Function Selected_List() As Long
+    
+    Dim i As Long
+    
+    Selected_List = 0
+    
+    For i = 0 To frmForm.lstDatabase.ListCount - 1
+    
+        If frmForm.lstDatabase.Selected(i) = True Then
+        
+            Selected_List = i + 1
+            Exit For
+        End If
+            
+    Next i
+    
+    
+End Function
+
+
+#frmForm
+Option Explicit
+
+Private Sub cmdDelete_Click()
+
+    If Selected_List = 0 Then
+        
+        MsgBox "No row is selected.", vbOKOnly + vbInformation, "Delete"
+        Exit Sub
+    End If
+    
+    Dim i As VbMsgBoxResult
+    
+    i = MsgBox("Do you want to delete the selected record?", vbYesNo + vbQuestion, "Confirmation")
+    
+    If i = vbNo Then Exit Sub
+    
+    ThisWorkbook.Sheets("Database").Rows(Selected_List + 1).Delete
+    
+    Call Reset
+    
+    MsgBox "Selected record has been deleted.", vbOKOnly + vbInformation, "Deleted"
+
+End Sub
+
+Private Sub cmdEdit_Click()
+
+    If Selected_List = 0 Then
+    
+        MsgBox "No row is selected. ", vbOKOnly + vbInformation, "Edit"
+        
+        Exit Sub
+    End If
+    
+    'Code to update the value to respective controls
+    
+    Dim sGender As String
+    
+    Me.txtRowNumber.Value = Selected_List + 1
+    
+    Me.txtName.Value = Me.lstDatabase.List(Me.lstDatabase.ListIndex, 1)
+    
+    Me.txtNRIC.Value = Me.lstDatabase.List(Me.lstDatabase.ListIndex, 2)
+    
+    sGender = Me.lstDatabase.List(Me.lstDatabase.ListIndex, 3)
+    
+    If sGender = "Male" Then
+        Me.optMale.Value = True
+    Else
+        Me.optFemale.Value = True
+    End If
+    
+    Me.txtDOB.Value = Me.lstDatabase.List(Me.lstDatabase.ListIndex, 4)
+    
+    Me.cmbArea.Value = Me.lstDatabase.List(Me.lstDatabase.ListIndex, 5)
+    
+    Me.txtAdd.Value = Me.lstDatabase.List(Me.lstDatabase.ListIndex, 6)
+    
+    Me.txtTel.Value = Me.lstDatabase.List(Me.lstDatabase.ListIndex, 7)
+    
+    Me.txtEmail.Value = Me.lstDatabase.List(Me.lstDatabase.ListIndex, 8)
+    
+    Me.cmbTypes.Value = Me.lstDatabase.List(Me.lstDatabase.ListIndex, 9)
+    
+    Me.txtMed.Value = Me.lstDatabase.List(Me.lstDatabase.ListIndex, 10)
+    
+    MsgBox "Please edit and click on 'Save' button to update.", vbOKOnly + vbInformation, "Edit"
+
+
+End Sub
+
+
+Private Sub cmdReset_Click()
+    Dim msgValue As VbMsgBoxResult
+    
+    msgValue = MsgBox("Do you want to reset the form?", vbYesNo + vbInformation, "Confirmation")
+    
+    If msgValue = vbNo Then Exit Sub
+    
+    Call Reset
+
+
+End Sub
+
+
+Private Sub cmdSave_Click()
+    
+    Dim msgValue As VbMsgBoxResult
+    
+    msgValue = MsgBox("Do you want to save the data?", vbYesNo + vbInformation, "Confirmation")
+    
+    If msgValue = vbNo Then Exit Sub
+    
+    Call Submit
+    Call Reset
+
+
+End Sub
+
+
+Private Sub UserForm_Initialize()
+
+Call Reset
+
+End Sub
